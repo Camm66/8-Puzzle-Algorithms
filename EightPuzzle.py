@@ -1,48 +1,109 @@
 class EightPuzzle:
-    def __init__(self, _start, _goal, _strategy):
-        self.state = _start
-        self.goal = _goal
-        self.strategy = _strategy
-        self.state = Node(self.start, null, 1, 0)
+    def __init__(self):
+        self.state = null
+        self.goal = null
+        self.strategy = null
 
-    def successor(self, parrent):
+    def setGame(self, start, goal, strategy):
+        self.state = start
+        self.goal = goal
+        self.strategy = strategy
+
+    def successor(self, parent):
         # Create list of branch states to be returned
         successorStates = list()
         # Get current position of the free space in the puzzle
-        i = parrent.state.index(0)
+        i = parent.state.index(0)
         if i > 2:
             # Create new child state
-            child_up = Node(parrent.state, parrent, parrent.depth + 1, 0)
+            child_up = Node(parent.state, parent, parent.depth + 1, 0)
             # Swap selected pieces
-            child_up.state[i] = parrent.state[i - 3]
-            child_up.state[i - 3] = parrent.state[i]
+            child_up.state[i] = parent.state[i - 3]
+            child_up.state[i - 3] = parent.state[i]
             # Add to list of new branch states
             successorStates.append(child_up)
         if i < 6:
-            child_down = Node(parrent.state, parrent, parrent.depth + 1, 0)
-            child_down.state[i] = parrent.state[i + 3]
-            child_down.state[i + 3] = parrent.state[i]
+            child_down = Node(parent.state, parent, parent.depth + 1, 0)
+            child_down.state[i] = parent.state[i + 3]
+            child_down.state[i + 3] = parent.state[i]
             successorStates.append(child_down)
         if i not in (0, 3, 6):
-            child_left = Node(parrent.state, parrent, parrent.depth + 1, 0)
-            child_left.state[i] = parrent.state[i - 1]
-            child_left.state[i - 1] = parrent.state[i]
+            child_left = Node(parent.state, parent, parent.depth + 1, 0)
+            child_left.state[i] = parent.state[i - 1]
+            child_left.state[i - 1] = parent.state[i]
             successorStates.append(child_left)
         if i not in (2, 5, 8):
-            child_right = Node(parrent.state, parrent, parrent.depth + 1, 0)
-            child_right.state[i] = parrent.state[i + 1]
-            child_right.state[i + 1] = parrent.state[i]
+            child_right = Node(parent.state, parent, parent.depth + 1, 0)
+            child_right.state[i] = parent.state[i + 1]
+            child_right.state[i + 1] = parent.state[i]
             successorStates.append(child_right)
         return successorStates
 
-    def printResults(self):
-        current = self.state
-        while current:
-            current.printState()
-            current = current.parent
+    def search(self):
+        strategy = self.strategy
+        if strategy == "Breadth First":
+            breadthFirst()
+        elif strategy == "Depth First":
+            depthFirst()
+        elif strategy == "Iterative Deepening":
+            iterativeDeepening()
+        elif strategy == "Uniform Cost":
+            uniformCost()
+        elif strategy == "Best First":
+            bestFirst()
+        elif strategy == "A*":
+            A1()
+        elif strategy == "A* 2":
+            A2()
+        elif strategy == "A* 3":
+            A3()
+        else:
+            print("Unknown search strategy has been selected!")
+        return
 
     def A1(self):
-        pass
+        openList = []
+        closedList = []
+        openList.append(start)
+
+        while openList:
+            current, index = best_fvalue(openList)
+            if current.goal():
+                return current
+            openList.pop(index)
+            closedList.append(current)
+
+            X = move_function(current)
+            for move in X:
+                ok = False  # checking in closedList
+                for i, item in enumerate(closedList):
+                    if item == move:
+                        ok = True
+                        break
+                if not ok:  # not in closed list
+                    newG = current.g + 1
+                    present = False
+
+                    # openList includes move
+                    for j, item in enumerate(openList):
+                        if item == move:
+                            present = True
+                            if newG < openList[j].g:
+                                openList[j].g = newG
+                                openList[j].f = openList[j].g + openList[j].h
+                                openList[j].parent = current
+                    if not present:
+                        move.g = newG
+                        move.h = move.manhattan()
+                        move.f = move.g + move.h
+                        move.parent = current
+                        openList.append(move)
+
+        def printResults(self):
+            current = self.state
+            while current:
+                current.printState()
+                current = current.parent
 
     def breadthFirst(self):
         pass
