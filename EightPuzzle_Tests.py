@@ -14,92 +14,93 @@ strategy = ["Breadth First", "Depth First", "Iterative Deepening",
 
 
 # Breadth First Tests
+# Easy
+eightPuzzle.setGame(easy, goal, strategy[0], "Easy")
+eightPuzzle.search()
+# Medium
+eightPuzzle.setGame(medium, goal, strategy[0], "Medium")
+eightPuzzle.search()
+# Hard
+#eightPuzzle.setGame(hard, goal, strategy[0], "Hard")
+#eightPuzzle.search()
+
+
+# Depth First Tests
 #Easy
-eightPuzzle.setGame(easy, goal, strategy[1])
+eightPuzzle.setGame(easy, goal, strategy[1], "Easy")
 eightPuzzle.search()
 #Medium
-eightPuzzle.setGame(medium, goal, strategy[1])
+eightPuzzle.setGame(medium, goal, strategy[1], "Medium")
 eightPuzzle.search()
 #Hard
-eightPuzzle.setGame(hard, goal, strategy[1])
+eightPuzzle.setGame(hard, goal, strategy[1], "Hard")
 eightPuzzle.search()
 
 '''
-# Depth First Tests
-#Easy
-eightPuzzle.setGame(easy, goal, strategy[2])
-eightPuzzle.search()
-#Medium
-eightPuzzle.setGame(medium, goal, strategy[2])
-eightPuzzle.search()
-#Hard
-eightPuzzle.setGame(hard, goal, strategy[2])
-eightPuzzle.search()
-
 # Iterative Deepening Tests
 #Easy
-eightPuzzle.setGame(easy, goal, strategy[3])
+eightPuzzle.setGame(easy, goal, strategy[2], "Easy")
 eightPuzzle.search()
 #Medium
-eightPuzzle.setGame(medium, goal, strategy[3])
+eightPuzzle.setGame(medium, goal, strategy[2], "Medium")
 eightPuzzle.search()
 #Hard
-eightPuzzle.setGame(hard, goal, strategy[3])
+eightPuzzle.setGame(hard, goal, strategy[2], "Hard")
 eightPuzzle.search()
 
 # Uniform Cost Tests
 #Easy
-eightPuzzle.setGame(easy, goal, strategy[4])
+eightPuzzle.setGame(easy, goal, strategy[3], "Easy")
 eightPuzzle.search()
 #Medium
-eightPuzzle.setGame(medium, goal, strategy[4])
+eightPuzzle.setGame(medium, goal, strategy[3], "Medium")
 eightPuzzle.search()
 #Hard
-eightPuzzle.setGame(hard, goal, strategy[4])
+eightPuzzle.setGame(hard, goal, strategy[3], "Hard")
 eightPuzzle.search()
 
 # Best First Tests
 #Easy
-eightPuzzle.setGame(easy, goal, strategy[5])
+eightPuzzle.setGame(easy, goal, strategy[4], "Easy")
 eightPuzzle.search()
 #Medium
-eightPuzzle.setGame(medium, goal, strategy[5])
+eightPuzzle.setGame(medium, goal, strategy[4], "Medium")
 eightPuzzle.search()
 #Hard
-eightPuzzle.setGame(hard, goal, strategy[5])
+eightPuzzle.setGame(hard, goal, strategy[4], "Hard")
 eightPuzzle.search()
 
 # A* Tests
 #Easy
-eightPuzzle.setGame(easy, goal, strategy[6])
+eightPuzzle.setGame(easy, goal, strategy[5], "Easy")
 eightPuzzle.search()
 #Medium
-eightPuzzle.setGame(medium, goal, strategy[6])
+eightPuzzle.setGame(medium, goal, strategy[5], "Medium")
 eightPuzzle.search()
 #Hard
-eightPuzzle.setGame(hard, goal, strategy[6])
+eightPuzzle.setGame(hard, goal, strategy[5], "Hard")
 eightPuzzle.search()
 
 # A* 2 Tests
 #Easy
-eightPuzzle.setGame(easy, goal, strategy[7])
+eightPuzzle.setGame(easy, goal, strategy[6], "Easy")
 eightPuzzle.search()
 #Medium
-eightPuzzle.setGame(medium, goal, strategy[7])
+eightPuzzle.setGame(medium, goal, strategy[6], "Medium")
 eightPuzzle.search()
 #Hard
-eightPuzzle.setGame(hard, goal, strategy[7])
+eightPuzzle.setGame(hard, goal, strategy[6], "Hard")
 eightPuzzle.search()
 
 # A* 3 Tests
 #Easy
-eightPuzzle.setGame(easy, goal, strategy[8])
+eightPuzzle.setGame(easy, goal, strategy[7], "Easy")
 eightPuzzle.search()
 #Medium
-eightPuzzle.setGame(medium, goal, strategy[8])
+eightPuzzle.setGame(medium, goal, strategy[7], "Medium")
 eightPuzzle.search()
 #Hard
-eightPuzzle.setGame(hard, goal, strategy[8])
+eightPuzzle.setGame(hard, goal, strategy[7], "Hard")
 eightPuzzle.search()
 
 '''

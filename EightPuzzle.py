@@ -1,39 +1,52 @@
+from collections import deque
+from copy import deepcopy
+import time
+
+
 class EightPuzzle:
     def __init__(self):
-        self.state = null
-        self.goal = null
-        self.strategy = null
+        self.start = None
+        self.goal = None
+        self.strategy = None
+        self.difficulty = None
+        self.time = None
+        self.space = None
 
-    def setGame(self, start, goal, strategy):
-        self.state = start
+    def setGame(self, start, goal, strategy, difficulty):
+        self.start = Node(start, None, 1, 0)
         self.goal = goal
         self.strategy = strategy
+        self.difficulty = difficulty
 
     def successor(self, parent):
         # Create list of branch states to be returned
         successorStates = list()
         # Get current position of the free space in the puzzle
         i = parent.state.index(0)
-        if i > 2:
+        # Left
+        if i not in (0, 3, 6):
             # Create new child state
-            child_up = Node(parent.state, parent, parent.depth + 1, 0)
+            child_left = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-1])
             # Swap selected pieces
+            child_left.state[i] = parent.state[i - 1]
+            child_left.state[i - 1] = parent.state[i]
+            # Add to list of new branch states
+            successorStates.append(child_left)
+        # Up
+        if i > 2:
+            child_up = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-3])
             child_up.state[i] = parent.state[i - 3]
             child_up.state[i - 3] = parent.state[i]
-            # Add to list of new branch states
             successorStates.append(child_up)
+        # Down
         if i < 6:
-            child_down = Node(parent.state, parent, parent.depth + 1, 0)
+            child_down = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i+3])
             child_down.state[i] = parent.state[i + 3]
             child_down.state[i + 3] = parent.state[i]
             successorStates.append(child_down)
-        if i not in (0, 3, 6):
-            child_left = Node(parent.state, parent, parent.depth + 1, 0)
-            child_left.state[i] = parent.state[i - 1]
-            child_left.state[i - 1] = parent.state[i]
-            successorStates.append(child_left)
+        # Right
         if i not in (2, 5, 8):
-            child_right = Node(parent.state, parent, parent.depth + 1, 0)
+            child_right = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i+1])
             child_right.state[i] = parent.state[i + 1]
             child_right.state[i + 1] = parent.state[i]
             successorStates.append(child_right)
@@ -41,75 +54,146 @@ class EightPuzzle:
 
     def search(self):
         strategy = self.strategy
+        print("\n------------------------------------------------------")
+        print("Strategy: {}\nDifficulty: {}".format(self.strategy, self.difficulty))
+        print("Start = {}\nGoal = {}".format(self.start.state, self.goal))
+        print("\n")
+        self.time = time.time()
         if strategy == "Breadth First":
-            breadthFirst()
+            self.breadthFirst()
         elif strategy == "Depth First":
-            depthFirst()
+            self.depthFirst()
         elif strategy == "Iterative Deepening":
-            iterativeDeepening()
+            self.iterativeDeepening()
         elif strategy == "Uniform Cost":
-            uniformCost()
+            self.uniformCost()
         elif strategy == "Best First":
-            bestFirst()
+            self.bestFirst()
         elif strategy == "A*":
-            A1()
+            self.A1()
         elif strategy == "A* 2":
-            A2()
+            self.A2()
         elif strategy == "A* 3":
-            A3()
+            self.A3()
         else:
             print("Unknown search strategy has been selected!")
+        endTime = time.time()
+        print("Time: {}".format(endTime - self.time))
+        print("Space: {}".format(self.space))
+
+        return
+
+    def printResults(self, current):
+        if current:
+            self.printResults(current.parent)
+            current.printState()
         return
 
     def A1(self):
-        openList = []
-        closedList = []
-        openList.append(start)
-
-        while openList:
-            current, index = best_fvalue(openList)
-            if current.goal():
-                return current
-            openList.pop(index)
-            closedList.append(current)
-
-            X = move_function(current)
-            for move in X:
-                ok = False  # checking in closedList
-                for i, item in enumerate(closedList):
-                    if item == move:
-                        ok = True
-                        break
-                if not ok:  # not in closed list
-                    newG = current.g + 1
-                    present = False
-
-                    # openList includes move
-                    for j, item in enumerate(openList):
-                        if item == move:
-                            present = True
-                            if newG < openList[j].g:
-                                openList[j].g = newG
-                                openList[j].f = openList[j].g + openList[j].h
-                                openList[j].parent = current
-                    if not present:
-                        move.g = newG
-                        move.h = move.manhattan()
-                        move.f = move.g + move.h
-                        move.parent = current
-                        openList.append(move)
-
-        def printResults(self):
-            current = self.state
-            while current:
-                current.printState()
-                current = current.parent
+        # openList = []
+        # closedList = []
+        # openList.append(start)
+        #
+        # while openList:
+        #     current, index = best_fvalue(openList)
+        #     if current.goal():
+        #         return current
+        #     openList.pop(index)
+        #     closedList.append(current)
+        #
+        #     X = move_function(current)
+        #     for move in X:
+        #         ok = False  # checking in closedList
+        #         for i, item in enumerate(closedList):
+        #             if item == move:
+        #                 ok = True
+        #                 break
+        #         if not ok:  # not in closed list
+        #             newG = current.g + 1
+        #             present = False
+        #
+        #             # openList includes move
+        #             for j, item in enumerate(openList):
+        #                 if item == move:
+        #                     present = True
+        #                     if newG < openList[j].g:
+        #                         openList[j].g = newG
+        #                         openList[j].f = openList[j].g + openList[j].h
+        #                         openList[j].parent = current
+        #             if not present:
+        #                 move.g = newG
+        #                 move.h = move.manhattan()
+        #                 move.f = move.g + move.h
+        #                 move.parent = current
+        #                 openList.append(move)
+        pass
 
     def breadthFirst(self):
-        pass
+        # Create queue, and list of visited states
+        queue = deque()
+        visited = {}
+        # Add root onto the queue
+        queue.append(self.start)
+        self.space = 1;
+
+        while len(queue) > 0:
+            # Pop item off the queue & visit its leaves
+            parent = queue.popleft()
+            visited[''.join(map(str, parent.state))] = parent
+            children = self.successor(parent)
+            # Check leaves for solution
+            for child in children:
+                if child.state == self.goal:
+                    self.printResults(child)
+                    return
+                else:
+                    # If no solution is found, add leaf to queue and continue
+                    if ''.join(map(str, child.state)) not in visited:
+                        queue.append(child)
+
+            if self.space < len(queue):
+                self.space = len(queue)
 
     def depthFirst(self):
-        pass
+        # Create queue, and list of visited states
+        stack = deque()
+        visited = set()
+
+        # Maintain set of elements on the queue
+        onStack = set(''.join(map(str, self.start.state)))
+
+
+        # Add root onto the queue
+        stack.append(self.start)
+        self.space = 1;
+
+        while len(stack) > 0:
+            # Pop item off the queue & visit its leaves
+            parent = stack.pop()
+
+            parentKey = ''.join(map(str, parent.state))
+            visited.add(parentKey)
+
+            children = self.successor(parent)
+            # Check leaves for solution
+            for child in children:
+                if child.state == self.goal:
+                    print("Depth: {}\nCost: {}".format(child.depth, child.cost))
+                    #self.printResults(child)
+                    return
+                else:
+                    # If no solution is found, add leaf to queue and continue
+                    childKey = ''.join(map(str, child.state))
+                    if childKey not in visited:
+                        if childKey not in onStack:
+                            stack.append(child)
+                            onStack.add(childKey)
+            # Remove parent key from onQueue
+            if parentKey in onStack:
+                onStack.remove(parentKey)
+
+            if self.space < len(stack):
+                self.space = len(stack)
 
     def iterativeDeepening(self):
         pass
@@ -126,18 +210,18 @@ class EightPuzzle:
     def A3(self):
         pass
 
-
 class Node:
     def __init__(self, _state, _parent, _depth, _cost):
         self.state = _state
         self.parent = _parent
-        self.child = null
+        self.child = None
         self.depth = _depth
         self.cost = _cost
         self.expanded = 'no'
 
     def printState(self):
         cState = self.state
+        print("Depth: {},  Cost: {}".format(self.depth, self.cost))
         print("|-----------|")
         print("| {} | {} | {} |".format(cState[0], cState[1], cState[2]))
         print("|-----------|")
