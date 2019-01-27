@@ -56,8 +56,6 @@ class EightPuzzle:
         return successorStates
 
     def search(self):
-        # Start timer for the selected algorithm
-        self.time = time.time()
         strategy = self.strategy
         if strategy == "Breadth First":
             self.breadthFirst()
@@ -70,15 +68,13 @@ class EightPuzzle:
         elif strategy == "Best First":
             self.bestFirst()
         elif strategy == "A*":
-            self.A1()
+            self.aStar(self.hMisplaced)
         elif strategy == "A* 2":
-            self.A2()
+            self.aStar(self.hManhattan)
         elif strategy == "A* 3":
-            self.A3()
+            self.aStar(self.hMyChoice)
         else:
             print("Unknown search strategy has been selected!")
-        # Determine runtime by subtracting the start-time from the end-time
-        self.time = time.time() - self.time
         self.printSummary()
         return
 
@@ -97,60 +93,6 @@ class EightPuzzle:
             head.printState()
         return
 
-
-    def A1(self):
-        # Create queue
-        queue = deque()
-        queue.append(self.start)
-        visited = {}
-
-        while len(queue) > 0:
-            pass
-        #     current, index = best_fvalue(openList)
-        #     if current.goal():
-        #         return current
-        #     openList.pop(index)
-        #     closedList.append(current)
-        #
-        #     X = move_function(current)
-        #     for move in X:
-        #         ok = False  # checking in closedList
-        #         for i, item in enumerate(closedList):
-        #             if item == move:
-        #                 ok = True
-        #                 break
-        #         if not ok:  # not in closed list
-        #             newG = current.g + 1
-        #             present = False
-        #
-        #             # openList includes move
-        #             for j, item in enumerate(openList):
-        #                 if item == move:
-        #                     present = True
-        #                     if newG < openList[j].g:
-        #                         openList[j].g = newG
-        #                         openList[j].f = openList[j].g + openList[j].h
-        #                         openList[j].parent = current
-        #             if not present:
-        #                 move.g = newG
-        #                 move.h = move.manhattan()
-        #                 move.f = move.g + move.h
-        #                 move.parent = current
-        #                 openList.append(move)
-
-        # def best_fvalue(openList):
-        #     f = openList[0].f
-        #     index = 0
-        #     for i, item in enumerate(openList):
-        #         if i == 0:
-        #             continue
-        #         if (item.f < f):
-        #             f = item.f
-        #             index = i
-        #
-        #     return openList[index], index
-        pass
-
     def breadthFirst(self):
         # Create queue
         queue = deque()
@@ -159,13 +101,15 @@ class EightPuzzle:
         # Create list of visited states
         visited = set()
 
-        # Initialize space complexity tracking
-        self.space = 1;
+        # Initialize space/time tracking
+        self.space = 1
+        self.time = 0
 
         while len(queue) > 0:
             # Pop item off the queue & visit its leaves
             parent = queue.popleft()
             visited.add(''.join(map(str, parent.state)))
+            self.time += 1
             # Get next possible moves
             children = self.successor(parent)
             # Check leaves for solution
@@ -188,14 +132,17 @@ class EightPuzzle:
         stack.append(self.start)
 
         # Maintain set of all elements, visited AND on stack
-        visited = set(''.join(map(str, self.start.state)))
+        visited = set()
 
-        # Initialize space complexity tracking
-        self.space = 1;
+        # Initialize space/time tracking
+        self.space = 1
+        self.time = 0
 
         while len(stack) > 0:
             # Pop item off the queue & visit its leaves
             parent = stack.pop()
+            visited.add(''.join(map(str, parent.state)))
+            self.time += 1
             # Get next possible moves
             children = self.successor(parent)
             # Check leaves for solution
@@ -208,7 +155,6 @@ class EightPuzzle:
                     # If no solution is found, add leaf to stack and continue
                     childKey = ''.join(map(str, child.state))
                     if childKey not in visited:
-                        visited.add(childKey)
                         stack.append(child)
 
             # Check if space in the queue has grown
@@ -223,19 +169,21 @@ class EightPuzzle:
             currentDepth += 1
 
     def ID_Helper(self, limit):
-        # Create queue, and list of visited states
+        # Create queue
         stack = deque()
         stack.append(self.start)
 
-        # Maintain set of all elements, visited AND on stack
+        # Maintain set of all elements visited
         visited = set(''.join(map(str, self.start.state)))
 
-        # Initialize space complexity tracking
-        self.space = 1;
+        # Initialize space/time tracking
+        self.space = 1
+        self.time = 0
 
         while len(stack) > 0:
             # Pop item off the queue & visit its leaves
             parent = stack.pop()
+            self.time += 1
             # Get next possible moves
             children = self.successor(parent)
             # Check leaves for solution
@@ -260,17 +208,20 @@ class EightPuzzle:
         # Create sorted priority queue
         pQueue = [(self.start.cost, self.start)]
         # Create list of visited state/cost pairs
-        visited = set([])
+        visited = {}
 
-        # Initialize space complexity tracking
-        self.space = 1;
+        # Initialize space/time tracking
+        self.space = 1
+        self.time = 0
 
         while pQueue:
             # Sort the queued items based on cost
             pQueue = sorted(pQueue, key=lambda x: x[0])
-            print(pQueue[0][0])
-            # Pop item off the queue & visit its leaves
+            # Pop item off the queue & add to list of visited nodes
             parent = pQueue.pop(0)[1]
+            parentKey = ''.join(map(str, parent.state))
+            visited[parentKey] = parent.cost
+            self.time += 1
 
             # Get next possible moves
             children = self.successor(parent)
@@ -283,22 +234,124 @@ class EightPuzzle:
                     return True
                 else:
                     # If no solution is found, add leaf to stack and continue
-                    if (child.cost, child) not in visited:
-                        # Add key value (cost, node) onto the sorted queue
+                    childKey = ''.join(map(str, child.state))
+                    if visited.get(childKey):
+                        if visited.get(childKey) > child.cost:
+                            # Update the cost of the visited state
+                            visited[childKey] = child.cost
+                            # Add key value (cost, node) onto the sorted queue
+                            pQueue.append((child.cost, child))
+                    # If state has not been visited
+                    else:
+                        visited[childKey] = child.cost
                         pQueue.append((child.cost, child))
-                        visited.add((child.cost, child))
 
             # Check if space in the queue has grown
             if self.space < len(pQueue):
                 self.space = len(pQueue)
 
     def bestFirst(self):
-        pass
+        # Create sorted priority queue
+        # This time we replace the cost with the number of misplaced tiles as the heuristic
+        pQueue = [(self.hMisplaced(self.start.state), self.start)]
+        # Create list of visited state/cost pairs
+        visited = set([])
 
-    def A2(self):
-        pass
+        # Initialize space/time tracking
+        self.space = 1
+        self.time = 0
 
-    def A3(self):
+        while pQueue:
+            # Sort the queued items based on cost
+            pQueue = sorted(pQueue, key=lambda x: x[0])
+            # Pop item off the queue & visit its leaves
+            parent = pQueue.pop(0)
+            visited.add((parent[0], parent[1]))
+            self.time += 1
+
+            # Get next possible moves
+            children = self.successor(parent[1])
+            # Check leaves for solution
+            for child in children:
+                if child.state == self.goal:
+                    self.depth = child.depth
+                    self.cost = child.cost
+                    # self.printPath()
+                    return True
+                else:
+                    # If no solution is found, add leaf to stack and continue
+                    childCost = (self.hMisplaced(self.start.state))
+                    if (childCost, child) not in visited:
+                        # Add key value (cost, node) onto the sorted queue
+                        pQueue.append((childCost, child))
+                        visited.add((childCost, child))
+            # Check if space in the queue has grown
+            if self.space < len(pQueue):
+                self.space = len(pQueue)
+
+    def aStar(self, h):
+        # Create sorted priority queue
+        # This time we replace the cost with the number of misplaced tiles as the heuristic
+        pQueue = [(self.start.cost + h(self.start.state), self.start)]
+        # Create list of visited state/cost pairs
+        visited = set([])
+
+        # Initialize space/time tracking
+        self.space = 1
+        self.time = 0
+
+        while len(pQueue) > 0:
+            # Sort the queued items based on path cost
+            pQueue = sorted(pQueue, key=lambda x: x[0])
+            # Pop item off the queue & visit its leaves
+            parent = pQueue.pop(0)[1]
+
+            # Check for goal
+            if parent.state == self.goal:
+                self.depth = parent.depth
+                self.cost = parent.cost
+                print("Found")
+                return True
+            visited.add((parent.cost, ''.join(map(str, parent.state))))
+            self.time += 1
+
+            # Get next possible moves
+            children = self.successor(parent)
+            for child in children:
+                if child.state == self.goal:
+                    self.depth = child.depth
+                    self.cost = child.cost
+                    print("Found")
+                    return True
+                else:
+                    # If no solution is found, add leaf to stack and continue
+                    childCost = child.cost + h(self.start.state)
+                    if (childCost, ''.join(map(str, child.state))) not in visited:
+                        # Add key value (cost, node) onto the sorted queue
+                        pQueue.append((childCost, child))
+                        visited.add((childCost, child))
+            # Check if space in the queue has grown
+            if self.space < len(pQueue):
+                self.space = len(pQueue)
+
+    def hMisplaced(self, state):
+        num = 0
+        for i in range(len(self.goal)):
+            if state[i] != self.goal[i]:
+                num += 1
+        return num
+
+    def hManhattan(self, state):
+        def xyDiff(a, b):
+            ax, ay = a % 3, a // 3
+            bx, by = b % 3, b // 3
+            return abs(ax - bx) + abs(ay - by)
+
+        return sum([xyDiff(state.index(i), self.goal.index(i))
+                    for i in range(1, 9)])
+
+
+    def hMyChoice(self):
         pass
 
 class Node:
