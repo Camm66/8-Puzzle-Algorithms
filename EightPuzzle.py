@@ -11,6 +11,8 @@ class EightPuzzle:
         self.difficulty = None
         self.time = None
         self.space = None
+        self.depth = None
+        self.cost = None
 
     def setGame(self, start, goal, strategy, difficulty):
         self.start = Node(start, None, 1, 0)
@@ -23,20 +25,14 @@ class EightPuzzle:
         successorStates = list()
         # Get current position of the free space in the puzzle
         i = parent.state.index(0)
-        # Left
-        if i not in (0, 3, 6):
-            # Create new child state
-            child_left = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-1])
-            # Swap selected pieces
-            child_left.state[i] = parent.state[i - 1]
-            child_left.state[i - 1] = parent.state[i]
-            # Add to list of new branch states
-            successorStates.append(child_left)
         # Up
         if i > 2:
+            # Create new child state
             child_up = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-3])
+            # Swap selected pieces
             child_up.state[i] = parent.state[i - 3]
             child_up.state[i - 3] = parent.state[i]
+            # Add to list of new branch states
             successorStates.append(child_up)
         # Down
         if i < 6:
@@ -44,6 +40,12 @@ class EightPuzzle:
             child_down.state[i] = parent.state[i + 3]
             child_down.state[i + 3] = parent.state[i]
             successorStates.append(child_down)
+        # Left
+        if i not in (0, 3, 6):
+            child_left = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-1])
+            child_left.state[i] = parent.state[i - 1]
+            child_left.state[i - 1] = parent.state[i]
+            successorStates.append(child_left)
         # Right
         if i not in (2, 5, 8):
             child_right = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i+1])
@@ -53,12 +55,9 @@ class EightPuzzle:
         return successorStates
 
     def search(self):
-        strategy = self.strategy
-        print("\n------------------------------------------------------")
-        print("Strategy: {}\nDifficulty: {}".format(self.strategy, self.difficulty))
-        print("Start = {}\nGoal = {}".format(self.start.state, self.goal))
-        print("\n")
+        # Start timer for the selected algorithm
         self.time = time.time()
+        strategy = self.strategy
         if strategy == "Breadth First":
             self.breadthFirst()
         elif strategy == "Depth First":
@@ -77,24 +76,35 @@ class EightPuzzle:
             self.A3()
         else:
             print("Unknown search strategy has been selected!")
-        endTime = time.time()
-        print("Time: {}".format(endTime - self.time))
+        # Determine runtime by subtracting the start-time from the end-time
+        self.time = time.time() - self.time
+        self.printSummary()
+        return
+
+    def printSummary(self):
+        print("\n------------------------------------------------------")
+        print("Strategy: {}\nDifficulty: {}".format(self.strategy, self.difficulty))
+        print("Start = {}\nGoal = {}".format(self.start.state, self.goal))
+        print("Depth: {}\nCost: {}".format(self.depth, self.cost))
+        print("Time: {}".format(self.time))
         print("Space: {}".format(self.space))
-
         return
 
-    def printResults(self, current):
-        if current:
-            self.printResults(current.parent)
-            current.printState()
+    def printPath(self, head):
+        if head:
+            self.printResults(head.parent)
+            head.printState()
         return
+
 
     def A1(self):
-        # openList = []
-        # closedList = []
-        # openList.append(start)
-        #
-        # while openList:
+        # Create queue
+        queue = deque()
+        queue.append(self.start)
+        visited = {}
+
+        while len(queue) > 0:
+            pass
         #     current, index = best_fvalue(openList)
         #     if current.goal():
         #         return current
@@ -126,80 +136,156 @@ class EightPuzzle:
         #                 move.f = move.g + move.h
         #                 move.parent = current
         #                 openList.append(move)
+
+        # def best_fvalue(openList):
+        #     f = openList[0].f
+        #     index = 0
+        #     for i, item in enumerate(openList):
+        #         if i == 0:
+        #             continue
+        #         if (item.f < f):
+        #             f = item.f
+        #             index = i
+        #
+        #     return openList[index], index
         pass
 
     def breadthFirst(self):
-        # Create queue, and list of visited states
+        # Create queue
         queue = deque()
-        visited = {}
-        # Add root onto the queue
         queue.append(self.start)
+
+        # Create list of visited states
+        visited = set()
+
+        # Initialize space complexity tracking
         self.space = 1;
 
         while len(queue) > 0:
             # Pop item off the queue & visit its leaves
             parent = queue.popleft()
-            visited[''.join(map(str, parent.state))] = parent
+            visited.add(''.join(map(str, parent.state)))
+            # Get next possible moves
             children = self.successor(parent)
             # Check leaves for solution
             for child in children:
                 if child.state == self.goal:
-                    self.printResults(child)
-                    return
-                else:
-                    # If no solution is found, add leaf to queue and continue
-                    if ''.join(map(str, child.state)) not in visited:
-                        queue.append(child)
+                    self.depth = child.depth
+                    self.cost = child.cost
+                    return True
+                # If no solution is found, add leaf to queue and continue
+                elif ''.join(map(str, child.state)) not in visited:
+                    queue.append(child)
 
+            # Check if space in the queue has grown
             if self.space < len(queue):
                 self.space = len(queue)
 
     def depthFirst(self):
         # Create queue, and list of visited states
         stack = deque()
-        visited = set()
-
-        # Maintain set of elements on the queue
-        onStack = set(''.join(map(str, self.start.state)))
-
-
-        # Add root onto the queue
         stack.append(self.start)
+
+        # Maintain set of all elements, visited AND on stack
+        visited = set(''.join(map(str, self.start.state)))
+
+        # Initialize space complexity tracking
         self.space = 1;
 
         while len(stack) > 0:
             # Pop item off the queue & visit its leaves
             parent = stack.pop()
-
-            parentKey = ''.join(map(str, parent.state))
-            visited.add(parentKey)
-
+            # Get next possible moves
             children = self.successor(parent)
             # Check leaves for solution
             for child in children:
                 if child.state == self.goal:
-                    print("Depth: {}\nCost: {}".format(child.depth, child.cost))
-                    #self.printResults(child)
-                    return
+                    self.depth = child.depth
+                    self.cost = child.cost
+                    return True
                 else:
-                    # If no solution is found, add leaf to queue and continue
+                    # If no solution is found, add leaf to stack and continue
                     childKey = ''.join(map(str, child.state))
                     if childKey not in visited:
-                        if childKey not in onStack:
-                            stack.append(child)
-                            onStack.add(childKey)
-            # Remove parent key from onQueue
-            if parentKey in onStack:
-                onStack.remove(parentKey)
+                        visited.add(childKey)
+                        stack.append(child)
 
+            # Check if space in the queue has grown
             if self.space < len(stack):
                 self.space = len(stack)
 
     def iterativeDeepening(self):
-        pass
+        solutionFound = False
+        currentDepth = 1
+        while solutionFound == False:
+            solutionFound = self.ID_Helper(currentDepth)
+            currentDepth += 1
+
+    def ID_Helper(self, limit):
+        # Create queue, and list of visited states
+        stack = deque()
+        stack.append(self.start)
+
+        # Maintain set of all elements, visited AND on stack
+        visited = set(''.join(map(str, self.start.state)))
+
+        # Initialize space complexity tracking
+        self.space = 1;
+
+        while len(stack) > 0:
+            # Pop item off the queue & visit its leaves
+            parent = stack.pop()
+            # Get next possible moves
+            children = self.successor(parent)
+            # Check leaves for solution
+            for child in children:
+                if child.state == self.goal:
+                    self.depth = child.depth
+                    self.cost = child.cost
+                    return True
+                else:
+                    childKey = ''.join(map(str, child.state))
+                    # Now check that child node depth meets the current limit before adding to the stack!
+                    if childKey not in visited and child.depth <= limit:
+                        visited.add(childKey)
+                        stack.append(child)
+
+            # Check if space in the queue has grown
+            if self.space < len(stack):
+                self.space = len(stack)
+        return False
 
     def uniformCost(self):
-        pass
+        stack = deque()
+        stack.append(self.start)
+
+        # Create list of visited states
+        visited = set()
+
+        # Initialize space complexity tracking
+        self.space = 1;
+        
+        while len(stack) > 0:
+            # Pop item off the queue & visit its leaves
+            parent = stack.pop()
+            # Get next possible moves
+            children = self.successor(parent)
+            # Check leaves for solution
+            for child in children:
+                if child.state == self.goal:
+                    self.depth = child.depth
+                    self.cost = child.cost
+                    return True
+                else:
+                    # If no solution is found, add leaf to stack and continue
+                    childKey = ''.join(map(str, child.state))
+                    if childKey not in visited:
+                        visited.add(childKey)
+                        stack.append(child)
+
+            # Check if space in the queue has grown
+            if self.space < len(stack):
+                self.space = len(stack)
 
     def bestFirst(self):
         pass
