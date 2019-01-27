@@ -13,6 +13,7 @@ eightPuzzle = EightPuzzle()
 strategy = ["Breadth First", "Depth First", "Iterative Deepening",
             "Uniform Cost", "Best First", "A*", "A* 2", "A* 3"]
 
+
 # Breadth First Tests
 # Easy
 eightPuzzle.setGame(easy, goal, strategy[0], "Easy")
@@ -24,23 +25,24 @@ eightPuzzle.search()
 # Hard
 eightPuzzle.setGame(hard, goal, strategy[0], "Hard")
 eightPuzzle.search()
-
+'''
 # Depth First Tests
 #Easy
 eightPuzzle.setGame(easy, goal, strategy[1], "Easy")
 eightPuzzle.search()
-
+'''
 #Medium
 eightPuzzle.setGame(medium, goal, strategy[1], "Medium")
 eightPuzzle.search()
 #Hard
 eightPuzzle.setGame(hard, goal, strategy[1], "Hard")
 eightPuzzle.search()
-
+'''
 # Iterative Deepening Tests
 #Easy
 eightPuzzle.setGame(easy, goal, strategy[2], "Easy")
 eightPuzzle.search()
+'''
 #Medium
 eightPuzzle.setGame(medium, goal, strategy[2], "Medium")
 eightPuzzle.search()

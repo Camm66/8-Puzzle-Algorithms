@@ -257,20 +257,20 @@ class EightPuzzle:
         return False
 
     def uniformCost(self):
-        # Create sorted queue
-        queue = SortedDict({self.start.cost : self.start})
-        # Create list of visited states
-        visited = SortedDict({self.start : self.start.cost})
+        # Create sorted priority queue
+        pQueue = [(self.start.cost, self.start)]
+        # Create list of visited state/cost pairs
+        visited = set([])
 
         # Initialize space complexity tracking
         self.space = 1;
 
-        while len(queue) > 0:
-            print("%s\n\n" % queue.keys())
+        while pQueue:
+            # Sort the queued items based on cost
+            pQueue = sorted(pQueue, key=lambda x: x[0])
+            print(pQueue[0][0])
             # Pop item off the queue & visit its leaves
-            keyval = queue.popitem(0)
-            parent = keyval[1]
-            visited.popitem()
+            parent = pQueue.pop(0)[1]
 
             # Get next possible moves
             children = self.successor(parent)
@@ -279,23 +279,18 @@ class EightPuzzle:
                 if child.state == self.goal:
                     self.depth = child.depth
                     self.cost = child.cost
-                    print("FOUND")
                     # self.printPath()
                     return True
                 else:
                     # If no solution is found, add leaf to stack and continue
-                    childKey = ''.join(map(str, child.state))
-                    if visited.get(childKey) == None:
+                    if (child.cost, child) not in visited:
                         # Add key value (cost, node) onto the sorted queue
-                        queue.setdefault(child.cost, child)
-                        visited.setdefault(childKey, child.cost)
-                    elif visited.get(childKey) > child.cost:
-                        queue.setdefault(child.cost, child)
-
+                        pQueue.append((child.cost, child))
+                        visited.add((child.cost, child))
 
             # Check if space in the queue has grown
-            if self.space < len(queue):
-                self.space = len(queue)
+            if self.space < len(pQueue):
+                self.space = len(pQueue)
 
     def bestFirst(self):
         pass
