@@ -1,4 +1,5 @@
 from collections import deque
+from sortedcontainers import SortedDict
 from copy import deepcopy
 import time
 
@@ -92,7 +93,7 @@ class EightPuzzle:
 
     def printPath(self, head):
         if head:
-            self.printResults(head.parent)
+            self.printPath(head.parent)
             head.printState()
         return
 
@@ -256,18 +257,21 @@ class EightPuzzle:
         return False
 
     def uniformCost(self):
-        stack = deque()
-        stack.append(self.start)
-
+        # Create sorted queue
+        queue = SortedDict({self.start.cost : self.start})
         # Create list of visited states
-        visited = set()
+        visited = SortedDict({self.start : self.start.cost})
 
         # Initialize space complexity tracking
         self.space = 1;
-        
-        while len(stack) > 0:
+
+        while len(queue) > 0:
+            print("%s\n\n" % queue.keys())
             # Pop item off the queue & visit its leaves
-            parent = stack.pop()
+            keyval = queue.popitem(0)
+            parent = keyval[1]
+            visited.popitem()
+
             # Get next possible moves
             children = self.successor(parent)
             # Check leaves for solution
@@ -275,17 +279,23 @@ class EightPuzzle:
                 if child.state == self.goal:
                     self.depth = child.depth
                     self.cost = child.cost
+                    print("FOUND")
+                    # self.printPath()
                     return True
                 else:
                     # If no solution is found, add leaf to stack and continue
                     childKey = ''.join(map(str, child.state))
-                    if childKey not in visited:
-                        visited.add(childKey)
-                        stack.append(child)
+                    if visited.get(childKey) == None:
+                        # Add key value (cost, node) onto the sorted queue
+                        queue.setdefault(child.cost, child)
+                        visited.setdefault(childKey, child.cost)
+                    elif visited.get(childKey) > child.cost:
+                        queue.setdefault(child.cost, child)
+
 
             # Check if space in the queue has grown
-            if self.space < len(stack):
-                self.space = len(stack)
+            if self.space < len(queue):
+                self.space = len(queue)
 
     def bestFirst(self):
         pass
