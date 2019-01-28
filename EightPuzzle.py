@@ -1,5 +1,4 @@
 from collections import deque
-from sortedcontainers import SortedDict
 from copy import deepcopy
 import time
 
@@ -27,49 +26,6 @@ class EightPuzzle:
         self.strategy = strategy
         self.difficulty = difficulty
 
-    '''
-    The successor function takes a node as input and produces up to four potential children nodes as output.
-    The number is determined by the position of the blank square on the current node state. Based on this, the
-    Left/Right/Up/Down moves can be represented by creating new state spaces that represent this positional shit 
-    of the blank square. The choices are limited by the current index of the blank square.
-    
-    Additionally, the new child nodes are supplied new depth and cost values. Depth is incremented 1 from the parent
-    node depth, and the cost is incremented by the value of the swapped non-blank piece. This is how we account for
-    the MODIFIED cost in our search strategies.'''
-    def successor(self, parent):
-        # Create list of branch states to be returned
-        successorStates = list()
-        # Get current position of the free space in the puzzle
-        i = parent.state.index(0)
-
-        # Left
-        if i not in (0, 3, 6):
-            # Create new child state
-            child_left = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-1])
-            # Swap selected pieces
-            child_left.state[i] = parent.state[i - 1]
-            child_left.state[i - 1] = parent.state[i]
-            # Add to list of new branch states
-            successorStates.append(child_left)
-        # Right
-        if i not in (2, 5, 8):
-            child_right = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i+1])
-            child_right.state[i] = parent.state[i + 1]
-            child_right.state[i + 1] = parent.state[i]
-            successorStates.append(child_right)
-        # Up
-        if i > 2:
-            child_up = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-3])
-            child_up.state[i] = parent.state[i - 3]
-            child_up.state[i - 3] = parent.state[i]
-            successorStates.append(child_up)
-        # Down
-        if i < 6:
-            child_down = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i+3])
-            child_down.state[i] = parent.state[i + 3]
-            child_down.state[i + 3] = parent.state[i]
-            successorStates.append(child_down)
-        return successorStates
 
     '''
     This method is used by the EightPuzzle object to initialize the search strategy that will be explored.
@@ -124,7 +80,7 @@ class EightPuzzle:
         return
 
     '''
-    This is an optional method that may be employed to print out a visual trace of the solution to the 
+    This is an optional method that may be employed to print out a visual trace of the solution to the
     8 puzzle problem for each of its states.
     Example:
     Depth: 10,  Cost: 31
@@ -142,6 +98,57 @@ class EightPuzzle:
             head.printState()
         return
 
+    '''
+    The successor function takes a node as input and produces up to four potential children nodes as output.
+    The number is determined by the position of the blank square on the current node state. Based on this, the
+    Left/Right/Up/Down moves can be represented by creating new state spaces that represent this positional shit
+    of the blank square. The choices are limited by the current index of the blank square.
+
+    Additionally, the new child nodes are supplied new depth and cost values. Depth is incremented 1 from the parent
+    node depth, and the cost is incremented by the value of the swapped non-blank piece. This is how we account for
+    the MODIFIED cost in our search strategies.'''
+    def successor(self, parent):
+        # Create list of branch states to be returned
+        successorStates = list()
+        # Get current position of the free space in the puzzle
+        i = parent.state.index(0)
+
+        # Left
+        if i not in (0, 3, 6):
+            # Create new child state
+            child_left = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-1])
+            # Swap selected pieces
+            child_left.state[i] = parent.state[i - 1]
+            child_left.state[i - 1] = parent.state[i]
+            # Add to list of new branch states
+            successorStates.append(child_left)
+        # Right
+        if i not in (2, 5, 8):
+            child_right = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i+1])
+            child_right.state[i] = parent.state[i + 1]
+            child_right.state[i + 1] = parent.state[i]
+            successorStates.append(child_right)
+        # Up
+        if i > 2:
+            child_up = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i-3])
+            child_up.state[i] = parent.state[i - 3]
+            child_up.state[i - 3] = parent.state[i]
+            successorStates.append(child_up)
+        # Down
+        if i < 6:
+            child_down = Node(deepcopy(parent.state), parent, parent.depth + 1, parent.cost + parent.state[i+3])
+            child_down.state[i] = parent.state[i + 3]
+            child_down.state[i + 3] = parent.state[i]
+            successorStates.append(child_down)
+        return successorStates
+
+    '''
+    This is an implementation of the Breadth First search algorithm. It relies
+    on a queue which stores currently discovered yet unexplored states.
+    Each iteration of the loop pops off a node from the front the queue,
+    gets its children from the succesor function, and then places these
+    unexplored states to the back of the queue.
+    '''
     def breadthFirst(self):
         # Create queue
         queue = deque()
@@ -179,6 +186,14 @@ class EightPuzzle:
                 self.space = len(queue)
         return False
 
+
+    '''
+    This is an implementation of the Depth First search algorithm. Unlike BFS,
+    this relies on a stack. Each iteration of the loop pops off a node from the
+    back of the stack, gets its children from the succesor function, and then
+    places these unexplored states to the back of the queue. We also maintain
+    a list of previously visisted states tp avoid duplication.
+    '''
     def depthFirst(self):
         # Create queue, and list of visited states
         stack = deque()
@@ -259,7 +274,6 @@ class EightPuzzle:
                     # Now check that child node depth meets the current limit before adding to the stack!
                     childKey = ''.join(map(str, child.state))
                     if childKey not in visited and child.depth <= limit:
-                        visited.add(childKey)
                         stack.append(child)
 
             # Check if space in the queue has grown
@@ -269,8 +283,8 @@ class EightPuzzle:
 
 
     '''
-    This aStar function implements searches for the Uniform-Cost, Best-First, A*, A*1, and A*2 algorithms. 
-    It does this by swapping in the correct heuristic function as an argument. Unlike the previous algorithms, 
+    This aStar function implements searches for the Uniform-Cost, Best-First, A*, A*1, and A*2 algorithms.
+    It does this by swapping in the correct heuristic function as an argument. Unlike the previous algorithms,
     the unexpanded nodes are maintained on a priority queue, with expanded nodes stored in a hash table for reference.
     Items on the queue are sorted according to the f(n) value returned from the heuristic function.
     '''
@@ -331,7 +345,7 @@ class EightPuzzle:
 
     '''
     The heuristic function for best first is similar to the misplaced tile heuristic, however g(n) is not
-    added to h(n) before returned. 
+    added to h(n) before returned.
     '''
     def hBest(self, node):
         state = node.state
@@ -354,7 +368,7 @@ class EightPuzzle:
         return node.cost + num
 
     '''
-    The manhattan heuristic calculates the number of squares each till needs to move along the both the x and y axis 
+    The manhattan heuristic calculates the number of squares each till needs to move along the both the x and y axis
     to get to their correct position.
     '''
     def fManhattan(self, node):
@@ -385,11 +399,8 @@ class EightPuzzle:
             sum += (abs(ax - bx) + abs(ay - by))
         return node.depth + sum
 
-    def fmyChoice2(self, node):
-        pass
-
 '''
-This is node class that is stored on queue. Each maintains the puzzle state it represents, the parent state, 
+This is node class that is stored on queue. Each maintains the puzzle state it represents, the parent state,
 the current depth relative to its parent, and the total cost relative to its parent.'''
 class Node:
     def __init__(self, _state, _parent, _depth, _cost):
