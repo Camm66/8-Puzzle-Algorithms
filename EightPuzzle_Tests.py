@@ -23,14 +23,15 @@ while testing:
           + "6 : A*\n"
           + "7 : A* 2\n"
           + "8 : A* 3\n"
+          + "666: Run All\n"
           + "Type q to exit\n")
     action = int(raw_input("Please enter the number of the test would like to run: "))
     if action == 'q':
         testing = False
         break
-    print("1 == Easy\n2 == Medium\n3 == Hard")
-    difficulty = int(raw_input("Please Enter the difficulty: "))
-
+    if action != 666:
+        print("1 == Easy\n2 == Medium\n3 == Hard")
+        difficulty = int(raw_input("Please Enter the difficulty: "))
     if action == 1:
     # Breadth First Tests
         if difficulty == 1:
@@ -127,62 +128,64 @@ while testing:
             eightPuzzle.setGame(hard, goal, strategy[7], "Hard")
             eightPuzzle.search()
 
+    elif action == 666:
+        # Breadth First Tests
+        eightPuzzle.setGame(easy, goal, strategy[0], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[0], "Medium")
+        eightPuzzle.search()
+        eightPuzzle.setGame(hard, goal, strategy[0], "Hard")
+        eightPuzzle.search()
+        # Depth First Tests
+        eightPuzzle.setGame(easy, goal, strategy[1], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[1], "Medium")
+        eightPuzzle.search()
+        eightPuzzle.setGame(hard, goal, strategy[1], "Hard")
+        eightPuzzle.search()
+        # Iterative Deepening Tests
+        eightPuzzle.setGame(easy, goal, strategy[2], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[2], "Medium")
+        eightPuzzle.search()
+        eightPuzzle.setGame(hard, goal, strategy[2], "Hard")
+        eightPuzzle.search()
+        # Uniform Cost Tests
+        eightPuzzle.setGame(easy, goal, strategy[3], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[3], "Medium")
+        eightPuzzle.search()
+        eightPuzzle.setGame(hard, goal, strategy[3], "Hard")
+        eightPuzzle.search()
+        # Best First Tests
+        eightPuzzle.setGame(easy, goal, strategy[4], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[4], "Medium")
+        eightPuzzle.search()
+        eightPuzzle.setGame(hard, goal, strategy[4], "Hard")
+        eightPuzzle.search()
+        # A * Tests
+        eightPuzzle.setGame(easy, goal, strategy[5], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[5], "Medium")
+        eightPuzzle.search()
+        eightPuzzle.setGame(hard, goal, strategy[5], "Hard")
+        eightPuzzle.search()
+        # A * 2 Tests
+        eightPuzzle.setGame(easy, goal, strategy[6], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[6], "Medium")
+        eightPuzzle.search()
+
+        eightPuzzle.setGame(hard, goal, strategy[6], "Hard")
+        eightPuzzle.search()
+        # A * 3 Tests
+        eightPuzzle.setGame(easy, goal, strategy[7], "Easy")
+        eightPuzzle.search()
+        eightPuzzle.setGame(medium, goal, strategy[7], "Medium")
+        eightPuzzle.search()
+        eightPuzzle.setGame(hard, goal, strategy[7], "Hard")
+        eightPuzzle.search()
     else:
         print("Invalid Selection")
     print("\n\n")
-
-# eightPuzzle.setGame(easy, goal, strategy[0], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[0], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[0], "Hard")
-# eightPuzzle.search()
-# # Depth First Tests
-# eightPuzzle.setGame(easy, goal, strategy[1], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[1], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[1], "Hard")
-# eightPuzzle.search()
-# # Iterative Deepening Tests
-# eightPuzzle.setGame(easy, goal, strategy[2], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[2], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[2], "Hard")
-# eightPuzzle.search()
-# # Uniform Cost Tests
-# eightPuzzle.setGame(easy, goal, strategy[3], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[3], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[3], "Hard")
-# eightPuzzle.search()
-# # Best First Tests
-# eightPuzzle.setGame(easy, goal, strategy[4], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[4], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[4], "Hard")
-# eightPuzzle.search()
-# # A * Tests
-# eightPuzzle.setGame(easy, goal, strategy[5], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[5], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[5], "Hard")
-# eightPuzzle.search()
-# # A * 2 Tests
-# eightPuzzle.setGame(easy, goal, strategy[6], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[6], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[6], "Hard")
-# eightPuzzle.search()
-# # A * 3 Tests
-# eightPuzzle.setGame(easy, goal, strategy[7], "Easy")
-# eightPuzzle.search()
-# eightPuzzle.setGame(medium, goal, strategy[7], "Medium")
-# eightPuzzle.search()
-# eightPuzzle.setGame(hard, goal, strategy[7], "Hard")
-# eightPuzzle.search()
