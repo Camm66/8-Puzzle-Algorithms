@@ -24,9 +24,10 @@ while testing:
           + "7 : A* 2\n"
           + "8 : A* 3\n"
           + "666: Run All\n"
-          + "Type q to exit\n")
+          + "Type 0 to exit\n")
     action = int(raw_input("Please enter the number of the test would like to run: "))
-    if action == 'q':
+    if action == 0:
+        print("Goodbye...")
         testing = False
         break
     if action != 666:

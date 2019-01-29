@@ -1,6 +1,5 @@
 from collections import deque
 from copy import deepcopy
-import time
 
 
 class EightPuzzle:
@@ -30,7 +29,8 @@ class EightPuzzle:
     '''
     This method is used by the EightPuzzle object to initialize the search strategy that will be explored.
     The selection is based on the global 'strategy' variable. Upon completion, the printSummary method is called
-    to display the results.'''
+    to display the results.
+    '''
     def search(self):
         strategy = self.strategy
         if strategy == "Breadth First":
@@ -66,7 +66,7 @@ class EightPuzzle:
     Cost: 17
     Time: 81
     Space: 152
-        '''
+    '''
     def printSummary(self, result):
         print("\n------------------------------------------------------")
         print("Strategy: {}\nDifficulty: {}".format(self.strategy, self.difficulty))
@@ -101,7 +101,7 @@ class EightPuzzle:
     '''
     The successor function takes a node as input and produces up to four potential children nodes as output.
     The number is determined by the position of the blank square on the current node state. Based on this, the
-    Left/Right/Up/Down moves can be represented by creating new state spaces that represent this positional shit
+    Left/Right/Up/Down moves can be represented by creating new state spaces that represent this positional shift
     of the blank square. The choices are limited by the current index of the blank square.
 
     Additionally, the new child nodes are supplied new depth and cost values. Depth is incremented 1 from the parent
@@ -146,8 +146,8 @@ class EightPuzzle:
     This is an implementation of the Breadth First search algorithm. It relies
     on a queue which stores currently discovered yet unexplored states.
     Each iteration of the loop pops off a node from the front the queue,
-    gets its children from the succesor function, and then places these
-    unexplored states to the back of the queue.
+    gets its children from the successor function, and then places these
+    unexplored states on the back of the queue.
     '''
     def breadthFirst(self):
         # Create queue
@@ -186,13 +186,12 @@ class EightPuzzle:
                 self.space = len(queue)
         return False
 
-
     '''
     This is an implementation of the Depth First search algorithm. Unlike BFS,
     this relies on a stack. Each iteration of the loop pops off a node from the
-    back of the stack, gets its children from the succesor function, and then
-    places these unexplored states to the back of the queue. We also maintain
-    a list of previously visisted states tp avoid duplication.
+    back of the stack, gets its children from the successor function, and then
+    places these unexplored states on the back of the queue. We also maintain
+    a list of previously visited states to avoid duplication on the stack.
     '''
     def depthFirst(self):
         # Create queue, and list of visited states
@@ -235,7 +234,8 @@ class EightPuzzle:
     This implementation of the iterative deepening algorithm relies on a helper method that implements a version
     of Depth First Search whose node traversal is capped by a maximum depth. The loop runs until the helper returns
     with verification that the solution was discovered. Each iteration consists of a new call to the subroutine with
-    an incremented depth level.'''
+    an incremented depth level.
+    '''
     def iterativeDeepening(self):
         # Initialize space/time tracking
         self.space = 1
@@ -281,9 +281,8 @@ class EightPuzzle:
                 self.space = len(stack)
         return False
 
-
     '''
-    This aStar function implements searches for the Uniform-Cost, Best-First, A*, A*1, and A*2 algorithms.
+    This aStar function implements searches for the Uniform-Cost, Best-First, A*, A*2, and A*3 algorithms.
     It does this by swapping in the correct heuristic function as an argument. Unlike the previous algorithms,
     the unexpanded nodes are maintained on a priority queue, with expanded nodes stored in a hash table for reference.
     Items on the queue are sorted according to the f(n) value returned from the heuristic function.
@@ -336,7 +335,6 @@ class EightPuzzle:
                 self.space = len(pQueue)
         return False
 
-
     '''
     The heuristic function for Uniform-Cost merely returns the cost stored on the node object.
     '''
@@ -356,8 +354,8 @@ class EightPuzzle:
         return num
 
     '''
-    This is the misplaced tiles heuristic, which calculates the number of tiles in the incorrect position. This is
-    the heuristic used for A*2.
+    This is the misplaced tiles heuristic, which calculates the number of tiles in the incorrect position. This number
+    is added to the current path cost of the Node.
     '''
     def fMisplaced(self, node):
         num = 0
@@ -368,8 +366,8 @@ class EightPuzzle:
         return node.cost + num
 
     '''
-    The manhattan heuristic calculates the number of squares each till needs to move along the both the x and y axis
-    to get to their correct position.
+    The manhattan heuristic sums the number of squares each piece needs to move along the both the x and y axis
+    to get to their correct position. The sum is add to the current path cost of the Node.
     '''
     def fManhattan(self, node):
         sum = 0
@@ -384,8 +382,8 @@ class EightPuzzle:
 
     '''
     My heuristic is an iteration of the manhattan heuristic. However, I sum it against the node depth as opposed to
-    the path cost. This is an intuitive solution in the sense that one would expect an increased depth a strong
-    indicator of increased search space, an therefore decreased performance. Further, this mitigates the modified cost
+    the path cost. This is an intuitive solution in the sense that one would consider an increased depth to be a strong
+    indicator of increased search space, and therefore decreased performance. Further, this mitigates the modified cost
     value of the individual pieces.
     '''
     def fMyChoice(self, node):
@@ -399,9 +397,11 @@ class EightPuzzle:
             sum += (abs(ax - bx) + abs(ay - by))
         return node.depth + sum
 
+
 '''
 This is node class that is stored on queue. Each maintains the puzzle state it represents, the parent state,
-the current depth relative to its parent, and the total cost relative to its parent.'''
+the current depth relative to its parent, and the total cost relative to its parent.
+'''
 class Node:
     def __init__(self, _state, _parent, _depth, _cost):
         self.state = _state
